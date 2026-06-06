@@ -7,6 +7,7 @@ import plotly.express as px     # 인터랙티브한 그래프(애니메이션, 
 from pathlib import Path        # 파일 경로를 OS와 무관하게 다루는 도구
 CSV_PATH = Path(__file__).parent / "gapminder.csv"  # 이 스크립트와 같은 폴더의 CSV (실행 위치와 무관하게 항상 같은 파일을 가리킴)
 df = pd.read_csv(CSV_PATH)  # CSV 파일을 표(데이터프레임)로 불러오기. 이후 모든 탭이 이 df를 함께 사용
+
 df_stu = pd.read_csv("student_data.csv")
 
 st.set_page_config(page_title="통합 대시보드", page_icon="🌍", layout="wide")  # 브라우저 탭 제목/아이콘 + 화면을 넓게 사용
