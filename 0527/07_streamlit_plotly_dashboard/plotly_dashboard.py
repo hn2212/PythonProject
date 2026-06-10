@@ -141,34 +141,39 @@ with tab3:  # 세 번째 탭 화면
 
 
 
-# [수정] 탭 4: 학생 성취도 분석 적용
+# [수정] 탭 4: 학생별 월별 성취도 비교 및 상세 분석
 with tab4:
-    st.header("🎓 학생 성취도 상세 분석")
+    st.header("🎓 학생별 월별 성취도 비교")
 
-    st.subheader("1. 학생별 월별 출석률과 학습량 비교")
-    # '월'을 기준으로 그래프를 나누어(facet_col) 1월과 2월을 구분
+    # 1. 학생별 출석률 & 학습량 (버블 그래프 - 학생별 1, 2월 묶음)
+    st.subheader("학생별 1월 vs 2월 출석/학습량 비교")
     fig1 = px.scatter(
         df_stu, x="출석률", y="학습량(시간)",
-        size="성취도", color="학생명",
-        facet_col="월",  # 월별로 그래프 분리
-        title="월별 학생 데이터 분포 (1월 vs 2월)",
-        labels={"월": "기준 월"}
+        size="성취도", color="월",  # 월을 색상으로 구분 (범례 클릭으로 1월/2월 끄기 가능)
+        symbol="월",             # 1월은 원, 2월은 별 모양 등으로 구분
+        hover_name="학생명",
+        text="월",              # 그래프 버블 안에 월 표시 (1 또는 2)
+        title="학생별 월별 활동 변화 (성취도 = 버블 크기)",
+        template="plotly_white"
     )
+    # 버블 안에 텍스트를 명확하게 배치
+    fig1.update_traces(textposition='top center')
     st.plotly_chart(fig1, use_container_width=True)
 
-    st.subheader("2. 월별 학생 성취도 순위 (행 배치)")
-    # 행(row)을 기준으로 월을 구분하여 1월과 2월을 위아래로 배치
+    # 2. 학생별 성취도 가로 막대 그래프 (학생별로 1, 2월 나란히 배치)
+    st.subheader("학생별 성취도 비교 (1월 vs 2월)")
     fig2 = px.bar(
-        df_stu.sort_values(["월", "성취도"], ascending=[True, False]),
-        x="성취도", y="학생명",  # x와 y를 바꾸어 가로 막대 그래프로 변경
-        facet_row="월",        # 월별로 행을 나누어 배치
-        text="성취도",
-        color="성취도",
-        orientation='h',       # 가로 방향 막대
-        height=600,            # 행 배치를 위해 높이 확장
-        color_continuous_scale="Viridis"
+        df_stu.sort_values(["학생명", "월"]),
+        x="성취도", y="학생명",
+        color="월",             # 1월과 2월을 색상으로 구분
+        barmode="group",        # [핵심] 1월과 2월을 나란히 그룹화하여 배치
+        text="성취도",          # 막대 옆에 성취도 점수 표시
+        orientation='h',
+        title="학생별 1월/2월 성취도 점수 대조",
+        template="plotly_white"
     )
+    fig2.update_traces(texttemplate='%{text}', textposition='outside')
     st.plotly_chart(fig2, use_container_width=True)
 
-    st.subheader("3. 학생별 상세 데이터")
+    st.subheader("학생별 상세 데이터")
     st.dataframe(df_stu, use_container_width=True)
