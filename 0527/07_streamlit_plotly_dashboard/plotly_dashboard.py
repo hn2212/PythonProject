@@ -141,7 +141,7 @@ with tab3:  # 세 번째 탭 화면
 
 
 
-# [수정] 탭 4: 학생 성취도 분석 적용
+#  탭 4: 학생 성취도 분석 적용
 with tab4:
     st.header("🎓 학생 성취도 상세 분석")
 
@@ -198,3 +198,45 @@ with tab4:
 
     st.subheader("3. 학생별 상세 데이터")
     st.dataframe(df_stu, use_container_width=True)
+
+
+
+    # --- 탭 5: 성취도 변화 궤적  ---
+    with tab5:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
+        st.header("🚀 학생별 성취도 변화 궤적")
+        st.write("1월에서 2월로 이동하는 화살표를 통해 성취 변화를 확인하세요.")
+
+        # 1월과 2월을 나란히 배치하기 위해 데이터를 재구성
+        df_pivot = df_stu.pivot(index='학생명', columns='월', values='성취도').reset_index()
+        df_pivot.columns = ['학생명', '1월_성취도', '2월_성취도']
+        df_pivot['변화량'] = df_pivot['2월_성취도'] - df_pivot['1월_성취도']
+
+        # 덤벨 차트(Dumbbell Chart) 생성
+        fig = px.scatter(
+            df_pivot,
+            x=['1월_성취도', '2월_성취도'], y='학생명',
+            color_discrete_sequence=['#ff9999', '#66b3ff'],  # 1월(빨강), 2월(파랑)
+            title="1월 vs 2월 성취도 변화 (화살표 방향 확인)",
+            labels={'value': '성취도 점수', 'variable': '기준 월'}
+        )
+
+        # 궤적을 잇는 화살표 느낌의 선 추가 (Plotly의 shapes 이용)
+        for i, row in df_pivot.iterrows():
+            fig.add_shape(
+                type="line", x0=row['1월_성취도'], y0=row['학생명'],
+                x1=row['2월_성취도'], y1=row['학생명'],
+                line=dict(color="gray", width=2, dash="dot"),
+                layer="below"
+            )
+
+        fig.update_layout(height=500, template="plotly_white")
+        st.plotly_chart(fig, use_container_width=True)
+
+        # 상승/하락 학생 요약
+        st.subheader("성취도 변화 요약")
+        up = df_pivot[df_pivot['변화량'] > 0]
+        down = df_pivot[df_pivot['변화량'] <= 0]
+
+        col1, col2 = st.columns(2)
+        col1.success(f"성취도 상승 학생: {', '.join(up['학생명'].tolist())}")
+        col2.warning(f"성취도 하락/정체 학생: {', '.join(down['학생명'].tolist())}")
