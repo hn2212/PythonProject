@@ -140,36 +140,35 @@ with tab3:  # 세 번째 탭 화면
     st.plotly_chart(fig, use_container_width=True)
 
 # [수정] 탭 4: 학생별 시각적 분석 최적화
+
 with tab4:
     st.header("🎓 학생별 종합 성취 분석")
 
-    # 1. 종합 지표: 출석률/학습량/성취도를 한 번에 (학생별로 차트 분할)
-    st.subheader("종합 지표: 출석률 vs 학습량 (크기/색상=성취도)")
-
-    # 학생별로 그래프를 나누어 색상/크기를 통한 가독성 확보
+    # 1. 모든 학생을 한 그래프에 표시 (출석률 vs 학습량)
+    st.subheader("종합 지표: 출석률 vs 학습량 (전체 학생 비교)")
     fig1 = px.scatter(
         df_stu,
         x="출석률", y="학습량(시간)",
-        size="성취도",  # 성취도를 버블 크기로 표현
-        color="학생명",  # [수정] 학생별로 고유 색상 부여
-        facet_col="학생명",  # [수정] 학생별로 그래프 분리 (겹침 방지)
-        facet_col_wrap=3,  # 3개씩 줄바꿈
-        text="월",
-        title="학생별 1월 vs 2월 활동 변화 (버블 크기=성취도)",
+        size="성취도",           # 성취도는 버블 크기로 직관적 표현
+        color="학생명",          # 학생별 고유 색상
+        symbol="월",             # 1월은 원, 2월은 별 모양으로 구분
+        hover_data=["학생명", "월", "성취도"], # 마우스 올릴 때만 상세 정보 표시
+        title="전체 학생 종합 활동 분포 (버블 크기 = 성취도)",
         template="plotly_white"
     )
-    fig1.update_traces(textposition='top center', marker=dict(sizeref=0.5))
+    # 버블 내 텍스트를 모두 제거하고 마커 크기만 조정하여 깔끔하게 표시
+    fig1.update_traces(marker=dict(sizemode='diameter', sizeref=0.5, line=dict(width=1, color='DarkSlateGrey')))
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 2. 성취도 점수 비교 (학생별 색상 고정)
-    st.subheader("성취도 점수 비교 (학생별 색상으로 직관적 구분)")
+    # 2. 성취도 점수 비교 (X축: 학생명, 범례: 월)
+    st.subheader("성취도 점수 비교 (학생별 1월 vs 2월)")
     fig2 = px.bar(
-        df_stu,
-        x="월", y="성취도",  # X축에 월, Y축에 성취도
-        color="학생명",  # 학생별로 고유 색상
-        barmode="group",  # [수정] 학생별 1/2월 성취도 비교
+        df_stu.sort_values(["학생명", "월"]),
+        x="학생명", y="성취도",    # X축: 학생명, Y축: 성취도
+        color="월",              # 1월(색상 A), 2월(색상 B)로 명확히 구분
+        barmode="group",         # 한 학생의 1월/2월 막대를 나란히 배치
         text="성취도",
-        title="학생별 월별 성취도 점수",
+        title="학생별 월별 성취도 점수 대조",
         template="plotly_white"
     )
     fig2.update_traces(texttemplate='%{text}', textposition='outside')
