@@ -89,7 +89,7 @@ with tab1:
 #  탭 2: 성취도 변화 궤적
 with tab2:
     st.header("🚀 학생별 성취도 변화 궤적")
-    st.write("1월에서 2월로 이동하는 화살표를 통해 성취 변화를 확인하세요.")
+    st.write("1월에서 2월로 이동하는 화살표를 통해 성취도 변화를 확인하세요.")
 
     # 덤벨/궤적 차트 생성
     df_pivot = df_stu.pivot(index='학생명', columns='월', values='성취도').reset_index()
@@ -99,8 +99,8 @@ with tab2:
         df_pivot,
         x=['1월_성취도', '2월_성취도'], y='학생명',
         color_discrete_sequence=['#ff9999', '#66b3ff'],
-        title="1월(분홍) → 2월(파랑) 성취도 이동",
-        labels={'value': '성취도 점수', 'variable': '기준 월'}
+        title="성취도 변화 (1월(분홍) → 2월(파랑))",
+        labels={'value': '성취도', 'variable': '기준 월'}
     )
 
     # 1. 아이콘(마커) 크기를 조절 (10)
