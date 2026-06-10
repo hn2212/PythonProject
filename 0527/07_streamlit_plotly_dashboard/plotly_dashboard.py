@@ -139,37 +139,44 @@ with tab3:  # 세 번째 탭 화면
     fig.update_layout(height=480)
     st.plotly_chart(fig, use_container_width=True)
 
-# [수정] 탭 4: 학생별 시각적 분석 최적화
+# [수정] 탭 4: 모든 학생을 하나의 그래프에서 비교 (스타일 유지)
 with tab4:
     st.header("🎓 학생별 종합 성취 분석")
 
-    # 1. 종합 지표: 출석률/학습량/성취도를 한 번에 (학생별로 차트 분할)
-    st.subheader("종합 지표: 출석률 vs 학습량 (크기/색상=성취도)")
+    # 1. 종합 지표: 출석률 vs 학습량 (통합 그래프)
+    st.subheader("종합 지표: 출석률 vs 학습량 (전체 학생 비교)")
 
-    # 학생별로 그래프를 나누어 색상/크기를 통한 가독성 확보
     fig1 = px.scatter(
         df_stu,
-        x="출석률", y="학습량(시간)",
-        size="성취도",  # 성취도를 버블 크기로 표현
-        color="학생명",  # [수정] 학생별로 고유 색상 부여
-        facet_col="학생명",  # [수정] 학생별로 그래프 분리 (겹침 방지)
-        facet_col_wrap=3,  # 3개씩 줄바꿈
-        text="월",
-        title="학생별 1월 vs 2월 활동 변화 (버블 크기=성취도)",
+        x="출석률",
+        y="학습량(시간)",
+        size="성취도",  # 성취도는 버블 크기
+        color="학생명",  # 학생별 고유 색상
+        symbol="월",  # 1월(원), 2월(별) - 모양 구분 유지
+        title="전체 학생 종합 활동 분포 (버블 크기=성취도)",
         template="plotly_white"
     )
-    fig1.update_traces(textposition='top center', marker=dict(sizeref=0.5))
+
+    # 텍스트와 레이블 가독성 최적화
+    fig1.update_layout(
+        xaxis_title="출석률 (%)",
+        yaxis_title="학습량 (시간)",
+        showlegend=True
+    )
+    # 버블 내 텍스트 제거 및 깔끔한 마커 설정
+    fig1.update_traces(marker=dict(sizemode='diameter', sizeref=0.5, line=dict(width=1, color='DarkSlateGrey')))
+
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 2. 성취도 점수 비교 (학생별 색상 고정)
-    st.subheader("성취도 점수 비교 (학생별 색상으로 직관적 구분)")
+    # 2. 성취도 점수 비교 (학생별 1월 vs 2월)
+    st.subheader("성취도 점수 비교 (학생별 1월 vs 2월)")
     fig2 = px.bar(
-        df_stu,
-        x="월", y="성취도",  # X축에 월, Y축에 성취도
-        color="학생명",  # 학생별로 고유 색상
-        barmode="group",  # [수정] 학생별 1/2월 성취도 비교
+        df_stu.sort_values(["학생명", "월"]),
+        x="학생명", y="성취도",
+        color="월",  # 1월/2월 색상 구분
+        barmode="group",  # 나란히 배치
         text="성취도",
-        title="학생별 월별 성취도 점수",
+        title="학생별 월별 성취도",
         template="plotly_white"
     )
     fig2.update_traces(texttemplate='%{text}', textposition='outside')
