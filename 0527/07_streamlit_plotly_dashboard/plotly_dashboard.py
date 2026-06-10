@@ -139,46 +139,46 @@ with tab3:  # 세 번째 탭 화면
     fig.update_layout(height=480)
     st.plotly_chart(fig, use_container_width=True)
 
-# [수정] 탭 4: 학생 성취도 상세 분석
+# [수정] 탭 4: 학생별 월별 성취도 비교 및 상세 분석
 with tab4:
     st.header("🎓 학생별 종합 성취 분석 (1월 vs 2월)")
 
-    # 1. 출석률, 학습량, 성취도를 한 번에 비교 (버블 차트)
-    st.subheader("종합 지표 비교: 출석률 vs 학습량 (버블 크기=성취도)")
+    # 1. 종합 지표: 출석률 vs 학습량 (색상=성취도, 모양=학생)
+    st.subheader("종합 지표: 출석률 vs 학습량 (색상=성취도, 모양=학생)")
 
-    # 1월과 2월을 구분하기 위해 '학생명_월' 식별자 생성
-    df_stu['학생_월'] = df_stu['학생명'] + " (" + df_stu['월'].astype(str) + "월)"
+    df_stu = df_stu.sort_values(["학생명", "월"])
 
     fig1 = px.scatter(
         df_stu,
         x="출석률",
         y="학습량(시간)",
-        size="성취도",  # 버블 크기 = 성취도
-        color="학생명",  # 학생별로 색상 지정
-        symbol="월",  # 1월은 원, 2월은 별 모양 (구분 용도)
-        text="월",  # 버블 내부에 월 텍스트 표시
-        hover_data=["성취도"],  # 마우스 올리면 성취도 상세 표시
-        title="학생별 월별 활동 변화 (크기=성취도, 모양=월)",
+        color="성취도",  # 성취도를 색상으로 표현 (높을수록 진함)
+        symbol="학생명",  # 학생별로 고유 아이콘 모양 부여
+        text="월",  # 데이터 포인트에 월 표시 (1 또는 2)
+        size_max=15,
+        title="학생별 성취도(색상) 및 활동량(위치) 변화",
         template="plotly_white"
     )
 
-    # 버블 내 텍스트 중앙 정렬
-    fig1.update_traces(textposition='middle center', marker=dict(sizemode='diameter', sizeref=0.5))
+    fig1.update_traces(textposition='top center', marker=dict(size=12))
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 2. 성취도 그룹 막대 그래프 (기존 유지)
-    st.subheader("성취도 점수 비교 (1월 vs 2월)")
+    # 2. 학생별 성취도 비교: 1월과 2월을 위아래로 배치
+    st.subheader("성취도 점수 비교 (학생별 1월/2월 세로 대조)")
     fig2 = px.bar(
         df_stu.sort_values(["학생명", "월"]),
-        x="성취도", y="학생명",
-        color="월",
-        barmode="group",
+        x="성취도", y="월",  # X축에 성취도, Y축에 월 배치
+        facet_row="학생명",  # [핵심] 학생별로 행을 나누어 배치
+        color="월",  # 1월과 2월 색상 구분
         text="성취도",
-        orientation='h',
-        title="학생별 1월/2월 성취도 대조",
+        orientation='h',  # 가로 막대
+        height=700,  # 학생이 많아질 경우를 대비해 높이 확보
+        title="학생별 1월 vs 2월 성취도 세로 비교",
         template="plotly_white"
     )
     fig2.update_traces(texttemplate='%{text}', textposition='outside')
+    fig2.update_yaxes(showticklabels=False)  # 불필요한 Y축 레이블 제거
+
     st.plotly_chart(fig2, use_container_width=True)
 
     st.subheader("학생별 상세 데이터")
