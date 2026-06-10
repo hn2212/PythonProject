@@ -145,30 +145,32 @@ with tab3:  # 세 번째 탭 화면
 with tab4:
     st.header("🎓 학생 성취도 상세 분석")
 
-    st.subheader("1. 학생별 월별 출석률과 학습량 비교")
-    # '월'을 기준으로 그래프를 나누어(facet_col) 1월과 2월을 구분
+    # 1. 종합 지표: 출석률 vs 학습량 (전체 학생 비교)
+    st.subheader("종합 지표: 출석률 vs 학습량 (색상 농도=성취도)")
+
     fig1 = px.scatter(
-        df_stu, x="출석률", y="학습량(시간)",
-        size="성취도", color="학생명",
-        facet_col="월",  # 월별로 그래프 분리
-        title="월별 학생 데이터 분포 (1월 vs 2월)",
-        labels={"월": "기준 월"}
+        df_stu,
+        x="출석률", y="학습량(시간)",
+        color="성취도",  # 성취도를 색상 농도로 표현
+        symbol="학생명",  # 학생별 아이콘 모양 고정
+        text="월",  # 아이콘 옆에 월(1 또는 2) 표기
+        color_continuous_scale="Viridis",
+        title="전체 학생 종합 활동 분포 (아이콘=학생, 1/2=월)",
+        template="plotly_white"
     )
+
+    # 텍스트 모드를 추가하여 아이콘 옆에 숫자 표시 및 위치 조정
+    fig1.update_traces(
+        mode='markers+text',
+        textposition='top center',
+        marker=dict(size=14, line=dict(width=1, color='DarkSlateGrey'))
+    )
+
+    # 레이블 명칭을 한 번만 깔끔하게 설정
+    fig1.update_layout(
+        xaxis_title="출석률 (%)",
+        yaxis_title="학습량 (시간)",
+        showlegend=True
+    )
+
     st.plotly_chart(fig1, use_container_width=True)
-
-    st.subheader("2. 월별 학생 성취도 순위 (행 배치)")
-    # 행(row)을 기준으로 월을 구분하여 1월과 2월을 위아래로 배치
-    fig2 = px.bar(
-        df_stu.sort_values(["월", "성취도"], ascending=[True, False]),
-        x="성취도", y="학생명",  # x와 y를 바꾸어 가로 막대 그래프로 변경
-        facet_row="월",        # 월별로 행을 나누어 배치
-        text="성취도",
-        color="성취도",
-        orientation='h',       # 가로 방향 막대
-        height=600,            # 행 배치를 위해 높이 확장
-        color_continuous_scale="Viridis"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-
-    st.subheader("3. 학생별 상세 데이터")
-    st.dataframe(df_stu, use_container_width=True)
