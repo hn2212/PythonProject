@@ -115,7 +115,7 @@ with tab2:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
                 xref="x", yref="y",
                 axref="x", ayref="y",
                 showarrow=True,
-                arrowhead=2,
+                arrowhead=1,
                 arrowsize=1,
                 arrowwidth=3,  # 2. 화살표 굵기를 키움 (2 → 3)
                 arrowcolor="black",  # 3. 화살표 색상을 더 진하게 변경 (gray → black)
