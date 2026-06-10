@@ -146,14 +146,31 @@ with tab4:
     st.header("🎓 학생 성취도 상세 분석")
 
     st.subheader("1. 학생별 월별 출석률과 학습량 비교")
-    # '월'을 기준으로 그래프를 나누어(facet_col) 1월과 2월을 구분
     fig1 = px.scatter(
-        df_stu, x="출석률", y="학습량(시간)",
-        size="성취도", color="학생명",
-        facet_col="월",  # 월별로 그래프 분리
-        title="월별 학생 데이터 분포 (1월 vs 2월)",
-        labels={"월": "기준 월"}
+        df_stu,
+        x="출석률", y="학습량(시간)",
+        color="성취도",  # 성취도를 색상 농도로 표현
+        symbol="학생명",  # 학생별 아이콘 모양 고정
+        text="월",  # 아이콘 옆에 월(1 또는 2) 표기
+        color_continuous_scale="Viridis",
+        title="전체 학생 종합 활동 분포 (모양=학생, 숫자=월)",
+        template="plotly_white"
     )
+
+    # 텍스트 모드(markers+text)를 사용하여 아이콘 옆에 숫자 표시
+    fig1.update_traces(
+        mode='markers+text',
+        textposition='top center',
+        marker=dict(size=14, line=dict(width=1, color='DarkSlateGrey'))
+    )
+
+    # 축 레이블을 한 번만 깔끔하게 설정
+    fig1.update_layout(
+        xaxis_title="출석률 (%)",
+        yaxis_title="학습량 (시간)",
+        showlegend=True
+    )
+
     st.plotly_chart(fig1, use_container_width=True)
 
     st.subheader("2. 월별 학생 성취도 순위 (행 배치)")
