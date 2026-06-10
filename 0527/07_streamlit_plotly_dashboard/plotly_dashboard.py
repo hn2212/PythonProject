@@ -149,19 +149,21 @@ with tab4:
 
     with col1:
         st.subheader("출석률과 학습량의 관계")
+        # 컬럼명을 CSV와 일치시킴: 성취도점수 -> 성취도
         fig1 = px.scatter(
             df_stu, x="출석률", y="학습량(시간)",
-            size="성취도점수", color="학생명",
+            size="성취도", color="학생명",
             title="학생별 출석/학습량 분포"
         )
         st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
         st.subheader("성취도 순위")
+        # 컬럼명을 CSV와 일치시킴: 성취도점수 -> 성취도
         fig2 = px.bar(
-            df_stu.sort_values("성취도점수", ascending=False),
-            x="학생명", y="성취도점수",
-            text="성취도점수", color="성취도점수",
+            df_stu.sort_values("성취도", ascending=False),
+            x="학생명", y="성취도",
+            text="성취도", color="성취도",
             color_continuous_scale="Viridis"
         )
         st.plotly_chart(fig2, use_container_width=True)
