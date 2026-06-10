@@ -164,6 +164,14 @@ with tab4:
         marker=dict(line=dict(width=1, color='DarkSlateGrey'))
     )
 
+    # sizeref 값을 작게 할수록 전체적인 버블 크기가 커지며 상대적 차이가 잘 보임
+    # sizemode='area'는 성취도 수치와 버블 면적을 비례하게 함
+    fig1.update_traces(
+        mode='markers+text',
+        textposition='top center',
+        marker=dict(sizemode='area', sizeref=0.1, line=dict(width=1, color='DarkSlateGrey'))
+    )
+
     # 축 레이블 한 번만 설정
     fig1.update_layout(
         xaxis_title="출석률 (%)",
