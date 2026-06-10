@@ -139,33 +139,26 @@ with tab3:  # 세 번째 탭 화면
     fig.update_layout(height=480)
     st.plotly_chart(fig, use_container_width=True)
 
-# [수정] 탭 4: 모든 학생을 하나의 그래프에서 비교 (스타일 유지)
+# [수정] 탭 4: 학생 통합 분석 (가독성 최적화)
 with tab4:
     st.header("🎓 학생별 종합 성취 분석")
 
-    # 1. 종합 지표: 출석률 vs 학습량 (통합 그래프)
-    st.subheader("종합 지표: 출석률 vs 학습량 (전체 학생 비교)")
+    # 1. 종합 지표: 출석률 vs 학습량 (학생별 모양 통일, 성취도=색상 농도)
+    st.subheader("종합 지표: 출석률 vs 학습량 (색상 농도=성취도)")
 
     fig1 = px.scatter(
         df_stu,
-        x="출석률",
-        y="학습량(시간)",
-        size="성취도",  # 성취도는 버블 크기
-        color="학생명",  # 학생별 고유 색상
-        symbol="월",  # 1월(원), 2월(별) - 모양 구분 유지
-        title="전체 학생 종합 활동 분포 (버블 크기=성취도)",
+        x="출석률", y="학습량(시간)",
+        color="성취도",  # 성취도를 색상(농도)으로 표현
+        symbol="학생명",  # 학생별로 모양(아이콘) 구분
+        size_max=12,  # 아이콘 크기를 적절하게 줄임
+        color_continuous_scale="Viridis",  # 밝은색(낮음) -> 짙은색(높음)
+        title="전체 학생 종합 활동 분포 (모양=학생, 색상진함=성취도)",
         template="plotly_white"
     )
 
-    # 텍스트와 레이블 가독성 최적화
-    fig1.update_layout(
-        xaxis_title="출석률 (%)",
-        yaxis_title="학습량 (시간)",
-        showlegend=True
-    )
-    # 버블 내 텍스트 제거 및 깔끔한 마커 설정
-    fig1.update_traces(marker=dict(sizemode='diameter', sizeref=0.5, line=dict(width=1, color='DarkSlateGrey')))
-
+    # 텍스트와 마커 가독성 조정
+    fig1.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
     st.plotly_chart(fig1, use_container_width=True)
 
     # 2. 성취도 점수 비교 (학생별 1월 vs 2월)
@@ -173,10 +166,10 @@ with tab4:
     fig2 = px.bar(
         df_stu.sort_values(["학생명", "월"]),
         x="학생명", y="성취도",
-        color="월",  # 1월/2월 색상 구분
-        barmode="group",  # 나란히 배치
+        color="월",  # 1월과 2월을 구분
+        barmode="group",
         text="성취도",
-        title="학생별 월별 성취도",
+        title="학생별 월별 성취도 점수 대조",
         template="plotly_white"
     )
     fig2.update_traces(texttemplate='%{text}', textposition='outside')
