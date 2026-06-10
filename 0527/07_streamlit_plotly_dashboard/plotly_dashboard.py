@@ -103,10 +103,10 @@ with tab2:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
         labels={'value': '성취도 점수', 'variable': '기준 월'}
     )
 
-    # 아이콘(마커) 크기를 16으로 키움
-    fig.update_traces(marker=dict(size=16))
+    # 1. 아이콘(마커) 크기를 조절 (10)
+    fig.update_traces(marker=dict(size=10))
 
-    # 1월에서 2월을 잇는 화살표 점선 궤적 추가
+    # 1월에서 2월을 잇는 화살표 궤적 추가
     for i, row in df_pivot.iterrows():
         fig.add_annotation(
             dict(
@@ -115,12 +115,12 @@ with tab2:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
                 xref="x", yref="y",
                 axref="x", ayref="y",
                 showarrow=True,
-                arrowhead=2,  # 화살표 머리 모양
+                arrowhead=2,
                 arrowsize=1,
-                arrowwidth=2,
-                arrowcolor="gray",
-                standoff=8,  # 아이콘과 화살표 사이 간격
-                opacity=0.6
+                arrowwidth=3,  # 2. 화살표 굵기를 키움 (2 → 3)
+                arrowcolor="black",  # 3. 화살표 색상을 더 진하게 변경 (gray → black)
+                standoff=5,  # 마커가 작아졌으므로 standoff도 살짝 조정
+                opacity=1.0  # 4. 투명도를 제거하여 더 선명하게 표시
             )
         )
 
