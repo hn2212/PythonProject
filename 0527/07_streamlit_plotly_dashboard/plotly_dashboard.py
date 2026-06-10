@@ -139,40 +139,46 @@ with tab3:  # 세 번째 탭 화면
     fig.update_layout(height=480)
     st.plotly_chart(fig, use_container_width=True)
 
-# [수정] 탭 4: 학생 통합 분석 (가독성 최적화)
+# [수정] 탭 4: 학생별 월별 성취도 비교 및 상세 분석
 with tab4:
-    st.header("🎓 학생별 종합 성취 분석")
+    st.header("🎓 학생별 종합 성취 분석 (1월 vs 2월)")
 
-    # 1. 종합 지표: 출석률 vs 학습량 (학생별 모양 통일, 성취도=색상 농도)
-    st.subheader("종합 지표: 출석률 vs 학습량 (색상 농도=성취도)")
+    # 1. 종합 지표: 출석률 vs 학습량 (색상=성취도, 모양=학생)
+    st.subheader("종합 지표: 출석률 vs 학습량 (색상=성취도, 모양=학생)")
+
+    df_stu = df_stu.sort_values(["학생명", "월"])
 
     fig1 = px.scatter(
         df_stu,
-        x="출석률", y="학습량(시간)",
-        color="성취도",  # 성취도를 색상(농도)으로 표현
-        symbol="학생명",  # 학생별로 모양(아이콘) 구분
-        size_max=12,  # 아이콘 크기를 적절하게 줄임
-        color_continuous_scale="Viridis",  # 밝은색(낮음) -> 짙은색(높음)
-        title="전체 학생 종합 활동 분포 (모양=학생, 색상진함=성취도)",
+        x="출석률",
+        y="학습량(시간)",
+        color="성취도",  # 성취도를 색상으로 표현 (높을수록 진함)
+        symbol="학생명",  # 학생별로 고유 아이콘 모양 부여
+        text="월",  # 데이터 포인트에 월 표시 (1 또는 2)
+        size_max=15,
+        title="학생별 성취도(색상) 및 활동량(위치) 변화",
         template="plotly_white"
     )
 
-    # 텍스트와 마커 가독성 조정
-    fig1.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
+    fig1.update_traces(textposition='top center', marker=dict(size=12))
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 2. 성취도 점수 비교 (학생별 1월 vs 2월)
-    st.subheader("성취도 점수 비교 (학생별 1월 vs 2월)")
+    # 2. 학생별 성취도 비교: 1월과 2월을 위아래로 배치
+    st.subheader("성취도 점수 비교 (학생별 1월/2월 세로 대조)")
     fig2 = px.bar(
         df_stu.sort_values(["학생명", "월"]),
-        x="학생명", y="성취도",
-        color="월",  # 1월과 2월을 구분
-        barmode="group",
+        x="성취도", y="월",  # X축에 성취도, Y축에 월 배치
+        facet_row="학생명",  # [핵심] 학생별로 행을 나누어 배치
+        color="월",  # 1월과 2월 색상 구분
         text="성취도",
-        title="학생별 월별 성취도 점수 대조",
+        orientation='h',  # 가로 막대
+        height=700,  # 학생이 많아질 경우를 대비해 높이 확보
+        title="학생별 1월 vs 2월 성취도 세로 비교",
         template="plotly_white"
     )
     fig2.update_traces(texttemplate='%{text}', textposition='outside')
+    fig2.update_yaxes(showticklabels=False)  # 불필요한 Y축 레이블 제거
+
     st.plotly_chart(fig2, use_container_width=True)
 
     st.subheader("학생별 상세 데이터")
