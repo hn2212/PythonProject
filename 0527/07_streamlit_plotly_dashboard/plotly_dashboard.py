@@ -87,7 +87,7 @@ with tab1:
 
 
 #  탭 2: 성취도 변화 궤적
-with tab2:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
+with tab2:
     st.header("🚀 학생별 성취도 변화 궤적")
     st.write("1월에서 2월로 이동하는 화살표를 통해 성취 변화를 확인하세요.")
 
@@ -126,3 +126,22 @@ with tab2:  # 탭 목록에 "🚀 성취 변화 궤적"을 추가하세요
 
     fig.update_layout(height=500, template="plotly_white")
     st.plotly_chart(fig, use_container_width=True)
+
+    # 성취도 변화 분석 출력
+    st.subheader("📊 변화 요약")
+
+    # 향상 및 하락 학생 분류
+    improved = df_pivot[df_pivot['2월_성취도'] > df_pivot['1월_성취도']]['학생명'].tolist()
+    declined = df_pivot[df_pivot['2월_성취도'] < df_pivot['1월_성취도']]['학생명'].tolist()
+    maintained = df_pivot[df_pivot['2월_성취도'] == df_pivot['1월_성취도']]['학생명'].tolist()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.write(f"📈 **성취도 향상**: {', '.join(improved) if improved else '없음'}")
+
+    with col2:
+        st.write(f"📉 **성취도 하락**: {', '.join(declined) if declined else '없음'}")
+
+    if maintained:
+        st.write(f"➡️ **성취도 유지**: {', '.join(maintained)}")
