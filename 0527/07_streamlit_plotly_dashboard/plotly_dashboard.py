@@ -153,7 +153,7 @@ with tab4:
         color="학생명",  # 학생별 고유 색상(이전 스타일)
         symbol_sequence=['circle'],  # 아이콘을 원형으로 통일
         text="월",  # 아이콘 옆에 월 표기
-        title="전체 학생 종합 활동 분포 (색상=학생, 숫자=월)",
+        title="전체 학생 종합 활동 분포 (색상=학생, 숫자=월, 성취도=크기)",
         template="plotly_white"
     )
 
@@ -173,7 +173,7 @@ with tab4:
 
     st.plotly_chart(fig1, use_container_width=True)
 
-    
+
     st.subheader("2. 월별 학생 성취도 순위 (행 배치)")
     # 행(row)을 기준으로 월을 구분하여 1월과 2월을 위아래로 배치
     fig2 = px.bar(
